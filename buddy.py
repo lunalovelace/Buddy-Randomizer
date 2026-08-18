@@ -6,8 +6,13 @@ import streamlit as st
 st.set_page_config(page_title="สุ่มบัดดี้", page_icon="🎁")
 st.title("🎁 สุ่มบัดดี้")
 
-# --- 1. ข้อมูล Google Form ---
-FORM_ID = "1vxw15K7QooU69Og16CrvbPS3kap9w_lXv3c3dbN313w"
+# --- 1. ข้อมูล Google Form (ใส่ URL เต็มเพื่อป้องกันปัญหา 404) ---
+FORM_RESPONSE_URL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSc-PLACEHOLDER/formResponse" 
+# หมายเหตุ: หาก URL ลิงก์ฟอร์มเดิมคือ 1vxw15K7QooU69Og16CrvbPS3kap9w_lXv3c3dbN313w
+# เราจะใช้ URL มาตรฐานของ Google Form Response โดยตรงตามด้านล่างนี้ครับ:
+
+FORM_URL = "https://docs.google.com/forms/d/1vxw15K7QooU69Og16CrvbPS3kap9w_lXv3c3dbN313w/formResponse"
+
 ENTRY_YOUR_NAME = "entry.822914815"
 ENTRY_PICKED = "entry.1201390400"
 
@@ -60,22 +65,20 @@ try:
                 else:
                     picked = random.choice(possible_targets)
 
-                    # ลิงก์ส่งฟอร์มมาตรฐาน
-                    form_url = f"https://docs.google.com/forms/d/e/{FORM_ID}/formResponse"
-                    
                     payload = {
                         ENTRY_YOUR_NAME: your_name,
                         ENTRY_PICKED: picked
                     }
                     
-                    # ปรับ Header ให้ Google รับคำตอบชัวร์ๆ
                     headers = {
-                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                        "Content-Type": "application/x-www-form-urlencoded"
                     }
                     
-                    res = requests.post(form_url, data=payload, headers=headers)
+                    # ส่งแบบไม่ follow redirect เพื่อตรวจรับ status 200 หรือ 302 (ซึ่ง Google Form ถือว่าบันทึกสำเร็จทั้งคู่)
+                    res = requests.post(FORM_URL, data=payload, headers=headers, allow_redirects=False)
 
-                    if res.status_code == 200:
+                    if res.status_code in [200, 302]:
                         st.success("สำเร็จ!")
                         st.markdown(f"🎉 **{your_name}** สุ่มได้บัดดี้คือ: **{picked}**")
                         st.markdown("แคปไปเป็นความลับด้วยนะ")
