@@ -1,77 +1,78 @@
 import random
-import json
-import requests
+import gspread
 import pandas as pd
 import streamlit as st
+from google.oauth2.service_account import Credentials
 
 st.set_page_config(page_title="สุ่มบัดดี้", page_icon="🎁")
 st.title("🎁 สุ่มบัดดี้")
 
-# --- 1. ใส่ Web App URL จาก Apps Script ขั้นที่ 1 ตรงนี้ ---
-WEB_APP_URL = "นำ_URL_จาก_Apps_Script_มาวางตรงนี้"
+# --- 1. เชื่อมต่อ Google Sheets ผ่าน Service Account ---
+scope = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
 
-# --- 2. ลิงก์ดึง CSV จากทั้ง 2 ชีท ---
-url_members = "https://docs.google.com/spreadsheets/d/1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY/gviz/tq?tqx=out:csv"
-url_responses = "https://docs.google.com/spreadsheets/d/1yHczRQc9Y95KzIsSF14it2d4-NrwijT7D1wuos3BgAc/gviz/tq?tqx=out:csv"
+# ดึง Credentials จาก Streamlit Secrets
+creds = Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"], scopes=scope
+)
+client = gspread.authorize(creds)
 
-# ไม่ใช้ cache เพื่อป้องกันปัญหาไม่อัปเดตข้อมูลคนที่เคยสุ่มแล้ว
-def load_data():
-    try:
-        df_m = pd.read_csv(url_members)
-        members = df_m.iloc[:, 0].dropna().astype(str).str.strip().tolist()
-    except Exception:
-        members = []
+# เปิดไฟล์ Google Sheets ด้วยชื่อไฟล์
+SHEET_NAME = "https://docs.google.com/spreadsheets/d/1L6bnrkkhh-mLhFEVsDkeKQBB0iGsCcxkLTLMCBKzDxg/edit?usp=sharing" 
+spreadsheet = client.open(SHEET_NAME)
 
-    done = []
-    picked = []
-    try:
-        # ดึงประวัติการสุ่มแบบปิดแคช
-        df_r = pd.read_csv(f"{url_responses}&_={pd.Timestamp.now().timestamp()}")
-        if df_r.shape[1] >= 2:
-            done = df_r.iloc[:, 1].dropna().astype(str).str.strip().tolist()
-        if df_r.shape[1] >= 3:
-            picked = df_r.iloc[:, 2].dropna().astype(str).str.strip().tolist()
-    except Exception:
-        pass
+sheet_members = spreadsheet.worksheet("Members")
+sheet_history = spreadsheet.worksheet("History")
 
-    return members, done, picked
+# --- 2. ดึงข้อมูลแบบ Realtime ---
+# อ่านรายชื่อทั้งหมด
+all_members = [item for item in sheet_members.col_values(1) if item.strip()]
 
-ALL_MEMBERS, done_users, picked_buddies = load_data()
+# อ่านประวัติคนที่สุ่มไปแล้ว และบัดดี้ที่ถูกจับไปแล้ว
+history_records = sheet_history.get_all_values()
 
-if not ALL_MEMBERS:
-    st.error("ไม่สามารถดึงรายชื่อได้ กรุณาตรวจสอบการตั้งค่าแชร์ไฟล์รายชื่อเป็น 'Anyone with the link'")
+# ตัด Header ออกถ้ามี
+if len(history_records) > 0 and history_records[0][0] == "User":
+    history_records = history_records[1:]
+
+done_users = [row[0] for row in history_records if len(row) > 0]
+picked_buddies = [row[1] for row in history_records if len(row) > 1]
+
+# --- 3. ส่วนการทำงานของเว็บ ---
+if not all_members:
+    st.error("ไม่พบรายชื่อเพื่อนใน Google Sheets")
 else:
-    available_buddies = [name for name in ALL_MEMBERS if name not in picked_buddies]
+    # กฎข้อ 2: บัดดี้ที่โดนสุ่มไปแล้ว จะถูกตัดออก
+    available_buddies = [m for m in all_members if m not in picked_buddies]
 
-    your_name = st.selectbox("เลือกชื่อของตัวเอง:", ["-- เลือกชื่อของตัวเอง --"] + ALL_MEMBERS)
+    your_name = st.selectbox("เลือกชื่อของตัวเอง:", ["-- เลือกชื่อของตัวเอง --"] + all_members)
 
     if st.button("กดสุ่มบัดดี้!", type="primary"):
         if your_name == "-- เลือกชื่อของตัวเอง --":
             st.warning("กรุณาเลือกชื่อของตัวเองก่อน")
+            
+        # กฎล็อก: ถ้าชื่อนี้เคยสุ่มแล้ว ห้ามสุ่มซ้ำ
         elif your_name in done_users:
-            st.error(f"คุณ {your_name} สุ่มไปแล้ว ไม่สามารถสุ่มซ้ำได้ครับ!")
+            st.error(f"คุณ {your_name} เคยสุ่มไปแล้ว ไม่สามารถสุ่มซ้ำได้!")
+            
         else:
+            # กฎข้อ 1: ตัดชื่อตัวเองออกจากบัดดี้ที่มีให้สุ่ม
             possible_targets = [b for b in available_buddies if b != your_name]
 
             if not possible_targets:
-                st.error("เกิดข้อผิดพลาดในการสุ่ม (คนสุดท้ายเหลือแค่ชื่อตัวเอง) แคปไปบอกหมิวที")
+                st.error("ไม่เหลือบัดดี้ให้สุ่มแล้ว หรือเหลือแค่ชื่อตัวเอง กรุณาติดต่อคนดูแลระบบ")
             else:
+                # สุ่มบัดดี้
                 picked = random.choice(possible_targets)
 
-                # ส่งข้อมูลตรงเข้า Google Sheets ผ่าน Web App API
-                payload = {
-                    "your_name": your_name,
-                    "picked": picked
-                }
-                
-                try:
-                    res = requests.post(WEB_APP_URL, data=json.dumps(payload), timeout=10)
-                    if res.status_code == 200:
-                        st.success("สำเร็จ!")
-                        st.markdown(f"🎉 **{your_name}** สุ่มได้บัดดี้คือ: **{picked}**")
-                        st.markdown("แคปไปเป็นความลับด้วยนะ")
-                        st.balloons()
-                    else:
-                        st.error(f"บันทึกไม่สำเร็จ (Status: {res.status_code})")
-                except Exception as e:
-                    st.error("เกิดข้อผิดพลาดในการเชื่อมต่อระบบ")
+                # บันทึกเข้า Google Sheets ตรงๆ
+                sheet_history.append_row([your_name, picked])
+
+                # แสดงผล
+                st.success("สุ่มสำเร็จ!")
+                st.markdown(f"🎉 **{your_name}** สุ่มได้บัดดี้คือ: **{picked}**")
+                st.info("อย่าลืมแคปหน้าจอไว้เป็นความลับนะ!")
+                st.balloons()
+
