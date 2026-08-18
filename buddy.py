@@ -15,7 +15,7 @@ ENTRY_PICKED = "entry.1201390400"
 url_members = "https://docs.google.com/spreadsheets/d/1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY/gviz/tq?tqx=out:csv"
 url_responses = "https://docs.google.com/spreadsheets/d/1yHczRQc9Y95KzIsSF14it2d4-NrwijT7D1wuos3BgAc/gviz/tq?tqx=out:csv"
 
-@st.cache_data(ttl=3)
+@st.cache_data(ttl=2)
 def load_data():
     # 1. อ่านรายชื่อเพื่อนจากไฟล์ที่ 1
     try:
@@ -43,7 +43,6 @@ try:
     if not ALL_MEMBERS:
         st.error("ไม่สามารถดึงรายชื่อได้ กรุณาตรวจสอบการตั้งค่าแชร์ไฟล์รายชื่อเป็น 'Anyone with the link'")
     else:
-        # รายชื่อบัดดี้ที่ยังเหลือให้สุ่ม
         available_buddies = [name for name in ALL_MEMBERS if name not in picked_buddies]
 
         your_name = st.selectbox("เลือกชื่อของตัวเอง:", ["-- เลือกชื่อของตัวเอง --"] + ALL_MEMBERS)
@@ -61,14 +60,20 @@ try:
                 else:
                     picked = random.choice(possible_targets)
 
-                    # ส่งผลสุ่มเข้า Google Form
+                    # ลิงก์ส่งฟอร์มมาตรฐาน
                     form_url = f"https://docs.google.com/forms/d/e/{FORM_ID}/formResponse"
+                    
                     payload = {
                         ENTRY_YOUR_NAME: your_name,
                         ENTRY_PICKED: picked
                     }
                     
-                    res = requests.post(form_url, data=payload)
+                    # ปรับ Header ให้ Google รับคำตอบชัวร์ๆ
+                    headers = {
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                    }
+                    
+                    res = requests.post(form_url, data=payload, headers=headers)
 
                     if res.status_code == 200:
                         st.success("สำเร็จ!")
@@ -77,7 +82,7 @@ try:
                         st.balloons()
                         st.cache_data.clear()
                     else:
-                        st.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง")
+                        st.error(f"เกิดข้อผิดพลาดในการบันทึกข้อมูล (Status: {res.status_code})")
 
 except Exception as e:
     st.error("เกิดข้อผิดพลาดในการเชื่อมต่อระบบ")
