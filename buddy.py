@@ -11,7 +11,7 @@ ENTRY_YOUR_NAME = "entry.822914815"
 ENTRY_PICKED = "entry.1201390400"     
 
 # --- 2. ลิงก์ Google Sheets (แชร์ Anyone with the link แล้ว) ---
-sheet_url = "https://docs.google.com/spreadsheets/d/1yHczRQc9Y95KzISsF14it2d4-NrwijT7D1wuos3BgAc/export?format=csv"
+sheet_url = "https://docs.google.com/spreadsheets/d/1yHczRQc9Y95KzISsF14it2d4-NrwijT7D1wuos3BgAc/export?format=csv&gid1385562614"
 
 try:
     df = pd.read_csv(sheet_url)
