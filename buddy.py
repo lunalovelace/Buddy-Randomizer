@@ -14,7 +14,7 @@ ENTRY_YOUR_NAME = "entry.822914815"
 ENTRY_PICKED = "entry.1201390400"
 
 # --- 2. ลิงก์ดึง CSV จากทั้ง 2 ชีท ---
-url_members = "https://docs.google.com/spreadsheets/d/1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY/edit?usp=sharing"
+url_members = "https://docs.google.com/spreadsheets/d/1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY/edit?gid=0#gid=0"
 url_responses = "https://docs.google.com/spreadsheets/d/1L6bnrkkhh-mLhFEVsDkeKQBB0iGsCcxkLTLMCBKzDxg/edit?resourcekey=&gid=1823141371#gid=1823141371"
 
 # อ่านข้อมูลแบบปิด Cache ชั่วคราวเพื่อดึงข้อมูลล่าสุดจาก Google Sheets ตลอดเวลา
