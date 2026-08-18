@@ -11,13 +11,9 @@ FORM_ID = "1vxw15K7QooU69Og16CrvbPS3kap9w_lXv3c3dbN313w"
 ENTRY_YOUR_NAME = "entry.822914815"
 ENTRY_PICKED = "entry.1201390400"
 
-# --- 2. ID ของ Google Sheets ทั้ง 2 ไฟล์ ---
-# เอา ID จาก URL (ตรงช่วงระหว่าง /d/ และ /edit) มาใส่ตรงนี้ครับ
-MEMBERS_SHEET_ID = "1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY" 
-RESPONSES_SHEET_ID = "1yHczRQc9Y95KzISsF14it2d4-NrwijT7D1wuos3BgAc"
-
-url_members = f"https://docs.google.com/spreadsheets/d/{1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY}/gviz/tq?tqx=out:csv"
-url_responses = f"https://docs.google.com/spreadsheets/d/{1yHczRQc9Y95KzISsF14it2d4-NrwijT7D1wuos3BgAc}/gviz/tq?tqx=out:csv"
+# --- 2. ลิงก์ตรงสำหรับดึง CSV จากทั้ง 2 ชีท ---
+url_members = "https://docs.google.com/spreadsheets/d/1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY/gviz/tq?tqx=out:csv"
+url_responses = "https://docs.google.com/spreadsheets/d/1yHczRQc9Y95KzIsSF14it2d4-NrwijT7D1wuos3BgAc/gviz/tq?tqx=out:csv"
 
 @st.cache_data(ttl=3)
 def load_data():
@@ -45,7 +41,7 @@ try:
     ALL_MEMBERS, done_users, picked_buddies = load_data()
 
     if not ALL_MEMBERS:
-        st.error("ไม่สามารถดึงรายชื่อได้ กรุณาตรวจสอบ ID ชีทรายชื่อ และการตั้งค่าแชร์เป็น 'Anyone with the link'")
+        st.error("ไม่สามารถดึงรายชื่อได้ กรุณาตรวจสอบการตั้งค่าแชร์ไฟล์รายชื่อเป็น 'Anyone with the link'")
     else:
         # รายชื่อบัดดี้ที่ยังเหลือให้สุ่ม
         available_buddies = [name for name in ALL_MEMBERS if name not in picked_buddies]
@@ -56,7 +52,7 @@ try:
             if your_name == "-- เลือกชื่อของตัวเอง --":
                 st.warning("กรุณาเลือกชื่อของตัวเองก่อน")
             elif your_name in done_users:
-                st.error(f" {your_name} เอ็งสุ่มไปแล้วไม่ใช่เรอะ!")
+                st.error(f"{your_name} เอ็งสุ่มไปแล้วไม่ใช่เรอะ!")
             else:
                 possible_targets = [b for b in available_buddies if b != your_name]
 
