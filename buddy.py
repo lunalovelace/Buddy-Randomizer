@@ -13,8 +13,8 @@ ENTRY_PICKED = "entry.1201390400"
 
 # --- 2. ID ของ Google Sheets ทั้ง 2 ไฟล์ ---
 # เอา ID จาก URL (ตรงช่วงระหว่าง /d/ และ /edit) มาใส่ตรงนี้ครับ
-MEMBERS_SHEET_ID = "https://docs.google.com/spreadsheets/d/1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY/export?format=csv" 
-RESPONSES_SHEET_ID = "https://docs.google.com/spreadsheets/d/1yHczRQc9Y95KzISsF14it2d4-NrwijT7D1wuos3BgAc/export?format=csv"
+MEMBERS_SHEET_ID = "1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY" 
+RESPONSES_SHEET_ID = "1yHczRQc9Y95KzISsF14it2d4-NrwijT7D1wuos3BgAc"
 
 url_members = f"https://docs.google.com/spreadsheets/d/{1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY}/gviz/tq?tqx=out:csv"
 url_responses = f"https://docs.google.com/spreadsheets/d/{1yHczRQc9Y95KzISsF14it2d4-NrwijT7D1wuos3BgAc}/gviz/tq?tqx=out:csv"
