@@ -1,12 +1,11 @@
-# ตั้งค่าหน้าเว็บ
-import streamlit as st
-import pandas as pd
 import random
+import pandas as pd
+import streamlit as st
 
 st.title("🎁 สุ่มบัดดี้")
 
 # --- ดึงรายชื่อจาก Google Sheets ---
-sheet_url = "https://docs.google.com/spreadsheets/d/1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY/export?format=csv"
+sheet_url = "https://docs.google.com/spreadsheets/d/1qM5rLtF_vLmBsjewqYPvA0L-grvVtQwU3dx77SVvwJY/export?format=csv"
 
 try:
     # ดึงรายชื่อจากคอลัมน์แรกใน Sheets
@@ -18,40 +17,44 @@ try:
     if "assigned_pairs" not in st.session_state:
         st.session_state.assigned_pairs = {}
 
+    # 1. ให้เพื่อนเลือกชื่อตัวเอง
+    your_name = st.selectbox(
+        "เลือกชื่อของตัวเอง:", ["-- เลือกชื่อ --"] + ALL_MEMBERS
+    )
 
-# 1. ให้เพื่อนเลือกชื่อตัวเอง
-your_name = st.selectbox("เลือกชื่อของตัวเอง:", ["-- เลือกชื่อ --"] + ALL_MEMBERS)
+    if your_name != "-- เลือกชื่อ --":
+        # เช็คว่าเคยสุ่มไปหรือยัง
+        if your_name in st.session_state.assigned_pairs:
+            st.warning("เอ็งสุ่มไปแล้วไม่ใช่เรอะ!")
+            st.info(
+                f"บัดดี้คือ: **{st.session_state.assigned_pairs[your_name]}**"
+            )
+        else:
+            # หา รายชื่อที่สุ่มได้ (ตัดชื่อตัวเอง ออกจากตัวเลือก)
+            possible_choices = [
+                name
+                for name in st.session_state.available_buddies
+                if name != your_name
+            ]
 
-if your_name != "-- เลือกชื่อ --":
-    # เช็คว่าเคยสุ่มไปหรือยัง
-    if your_name in st.session_state.assigned_pairs:
-        st.warning("เอ็งสุ่มไปแล้วไม่ใช่เรอะ!")
-        st.info(f"บัดดี้คือ: **{st.session_state.assigned_pairs[your_name]}**")
-    else:
-        # หา รายชื่อที่สุ่มได้ (ตัดชื่อตัวเอง ออกจากตัวเลือก)
-        possible_choices = [name for name in st.session_state.available_buddies if name != your_name]
-        
-   # กรณีเหลือคนสุดท้ายแล้วเจอชื่อตัวเองพอดี (Edge Case)
+            # กรณีเหลือคนสุดท้ายแล้วเจอชื่อตัวเองพอดี (Edge Case)
             if len(possible_choices) == 0:
                 st.error(
                     "เกิดข้อผิดพลาดในการสุ่ม (คนสุดท้ายเหลือแค่ชื่อตัวเอง) แคปไปบอกหมิวที"
-        else:
-            if st.button("🎲 กดสุ่มบัดดี้"):
-                if possible_choices:
-                    import random
-
+                )
+            else:
+                if st.button("🎲 กดสุ่มบัดดี้"):
                     picked = random.choice(possible_choices)
 
                     # บันทึกผล
                     st.session_state.assigned_pairs[your_name] = picked
                     st.session_state.available_buddies.remove(picked)
 
-                    st.success("สำเร็จ")
-                    t.markdown(f"### 🎉 จับได้: **{picked}**")
-                    t.caption("อย่าลืมแคปหน้าจอไว้เป็นความลับนะ!")
+                    st.success("สำเร็จ!")
+                    st.markdown(f"### 🎉 จับได้: **{picked}**")
+                    st.markdown("อย่าลืมแคปไว้เป็นความลับนะ")
                     st.balloons()
-                else:
-                    st.error("ไม่เหลือคนให้สุ่มแล้ว!")
+
 except Exception as e:
     st.error("เกิดข้อผิดพลาดในการโหลดรายชื่อจาก Google Sheets")
 
