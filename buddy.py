@@ -13,7 +13,7 @@ ENTRY_PICKED = "entry.1201390400"
 
 # --- 2. ลิงก์ Google Sheets (ปรับรูปแบบเป็น /gviz/tq?tqx=out:csv&gid=...) ---
 # *** อย่าลืมเปลี่ยน เลขgidของคุณ เป็นเลข gid ของแท็บที่มีรายชื่อเพื่อนนะครับ ***
-SHEET_ID = "1yHczRQc9Y95KzIsSF14it2d4-NrwijT7D1wuos3E-10"
+SHEET_ID = "1yHczRQc9Y95KzISsF14it2d4-NrwijT7D1wuos3BgAc"
 GID = "1385562614" 
 
 sheet_url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid={GID}"
