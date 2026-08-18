@@ -10,7 +10,7 @@ st.title("🎁 สุ่มบัดดี้")
 FORM_URL = "https://docs.google.com/forms/d/1vxw15K7QooU69Og16CrvbPS3kap9w_lXv3c3dbN313w/formResponse"
 
 ENTRY_YOUR_NAME = "entry.822914815"
-ENTRY_PICKED = "entry.880874775"  # อัปเดต ID ตรงนี้แล้ว
+ENTRY_PICKED = "entry.880874775"
 
 # --- 2. ลิงก์ดึง CSV จากทั้ง 2 ชีท ---
 url_members = "https://docs.google.com/spreadsheets/d/1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY/gviz/tq?tqx=out:csv"
@@ -23,14 +23,14 @@ def load_data():
 
     # 1. ดึงรายชื่อสมาชิกทั้งหมด
     try:
-        df_m = pd.read_csv(f"{url_members}&_={pd.Timestamp.now().timestamp()}")
+        df_m = pd.read_csv(url_members)
         members = df_m.iloc[:, 0].dropna().astype(str).str.strip().tolist()
     except Exception as e:
         st.write("Error ดึงรายชื่อ:", e)
 
     # 2. ดึงประวัติคนที่เคยสุ่มไปแล้ว
     try:
-        df_r = pd.read_csv(f"{url_responses}&_={pd.Timestamp.now().timestamp()}")
+        df_r = pd.read_csv(url_responses)
         
         # คอลัมน์ B (Index 1) = คนที่เคยกดสุ่มไปแล้ว
         if df_r.shape[1] >= 2:
@@ -89,4 +89,3 @@ else:
                         st.error(f"บันทึกไม่สำเร็จ (Status Code: {res.status_code})")
                 except Exception as err:
                     st.error(f"เกิดข้อผิดพลาดในการส่งข้อมูล: {err}")
-
