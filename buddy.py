@@ -52,4 +52,7 @@ if your_name != "-- เลือกชื่อ --":
                     st.balloons()
                 else:
                     st.error("ไม่เหลือคนให้สุ่มแล้ว!")
+except Exception as e:
+    st.error("เกิดข้อผิดพลาดในการโหลดรายชื่อจาก Google Sheets")
+
 
