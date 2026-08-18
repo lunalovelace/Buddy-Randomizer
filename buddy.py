@@ -1,6 +1,7 @@
 # ตั้งค่าหน้าเว็บ
 import streamlit as st
 import pandas as pd
+import random
 
 st.title("🎁 สุ่มบัดดี้")
 
@@ -30,21 +31,25 @@ if your_name != "-- เลือกชื่อ --":
         # หา รายชื่อที่สุ่มได้ (ตัดชื่อตัวเอง ออกจากตัวเลือก)
         possible_choices = [name for name in st.session_state.available_buddies if name != your_name]
         
-        # กรณีเหลือคนสุดท้ายแล้วเจอชื่อตัวเองพอดี (Edge Case)
-        if len(possible_choices) == 0:
-            st.error("เกิดข้อผิดพลาดในการสุ่ม (คนสุดท้ายเหลือแค่ชื่อตัวเอง) แคปไปบอกหมิวที")
+   # กรณีเหลือคนสุดท้ายแล้วเจอชื่อตัวเองพอดี (Edge Case)
+            if len(possible_choices) == 0:
+                st.error(
+                    "เกิดข้อผิดพลาดในการสุ่ม (คนสุดท้ายเหลือแค่ชื่อตัวเอง) แคปไปบอกหมิวที"
         else:
-            if st.button("🎲 จับสุ่มบัดดี้"):
-                # สุ่ม 1 คนจากรายชื่อที่เหลืออยู่
-                chosen_buddy = random.choice(possible_choices)
-                
-                # บันทึกผล
-                st.session_state.assigned_pairs[your_name] = chosen_buddy
-                
-                # ตัดรายชื่อคนที่ถูกจับได้แล้วออกจากโถสุ่ม
-                st.session_state.available_buddies.remove(chosen_buddy)
-                
-                # แสดงผลให้เห็นเฉพาะคนที่กด
-                st.success("จับสุ่มสำเร็จ!")
-                st.markdown(f"### 🎉 จับได้: **{chosen_buddy}**")
-                st.caption("อย่าลืมแคปหน้าจอไว้เป็นความลับนะ!")
+            if st.button("🎲 กดสุ่มบัดดี้"):
+                if possible_choices:
+                    import random
+
+                    picked = random.choice(possible_choices)
+
+                    # บันทึกผล
+                    st.session_state.assigned_pairs[your_name] = picked
+                    st.session_state.available_buddies.remove(picked)
+
+                    st.success("สำเร็จ")
+                    t.markdown(f"### 🎉 จับได้: **{picked}**")
+                    t.caption("อย่าลืมแคปหน้าจอไว้เป็นความลับนะ!")
+                    st.balloons()
+                else:
+                    st.error("ไม่เหลือคนให้สุ่มแล้ว!")
+
