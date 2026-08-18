@@ -16,7 +16,7 @@ ENTRY_PICKED = "entry.1201390400"
 SHEET_ID = "1yHczRQc9Y95KzISsF14it2d4-NrwijT7D1wuos3BgAc"
 GID = "1385562614" 
 
-sheet_url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid={GID}"
+sheet_url = f"https://docs.google.com/spreadsheets/d/{1yHczRQc9Y95KzISsF14it2d4-NrwijT7D1wuos3BgAc}/gviz/tq?tqx=out:csv&gid={339007925}"
 
 # ฟังก์ชันดึงข้อมูลแบบไม่ค้างแคช
 @st.cache_data(ttl=5)
