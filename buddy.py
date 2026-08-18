@@ -61,5 +61,5 @@ try:
                     st.markdown(f"### 🎉 บัดดี้คือ: **{picked}**")
                     st.markdown("แคปไว้อย่าบอกใครนะ")
                     st.balloons()
-expect Exception as e:
-    st.error("ไม่สามารถโหลดข้อมูลรายชื่อได้")
+except Exception as e:
+    st.error("ไม่สามารถโหลดข้อมูลรายชื่อได้ กรุณาตรวจสอบการแชร์ Google Sheets")
