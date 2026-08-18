@@ -1,14 +1,22 @@
 # ตั้งค่าหน้าเว็บ
+import streamlit as st
+import pandas as pd
+
 st.title("🎁 สุ่มบัดดี้")
 
-# รายชื่อเพื่อนทั้งหมดในกลุ่ม
-ALL_MEMBERS = ["หมิว","เชง","พิม","มน","เอก","พลอย","ซิม"]
+# --- ดึงรายชื่อจาก Google Sheets ---
+sheet_url = "https://docs.google.com/spreadsheets/d/1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY/export?format=csv"
 
-if "available_buddies" not in st.session_state:
-    st.session_state.available_buddies = ALL_MEMBERS.copy()
+try:
+    # ดึงรายชื่อจากคอลัมน์แรกใน Sheets
+    ALL_MEMBERS = pd.read_csv(sheet_url).iloc[:, 0].dropna().tolist()
 
-if "assigned_pairs" not in st.session_state:
-    st.session_state.assigned_pairs = {}
+    if "available_buddies" not in st.session_state:
+        st.session_state.available_buddies = ALL_MEMBERS.copy()
+
+    if "assigned_pairs" not in st.session_state:
+        st.session_state.assigned_pairs = {}
+
 
 # 1. ให้เพื่อนเลือกชื่อตัวเอง
 your_name = st.selectbox("เลือกชื่อของตัวเอง:", ["-- เลือกชื่อ --"] + ALL_MEMBERS)
