@@ -5,7 +5,7 @@ import streamlit as st
 st.title("🎁 สุ่มบัดดี้")
 
 # --- ดึงรายชื่อจาก Google Sheets ---
-sheet_url = "https://docs.google.com/spreadsheets/d/1qM5rLtF_vLmBsjewqYPvA0L-grvVtQwU3dx77SVvwJY/export?format=csv"
+sheet_url = "https://docs.google.com/spreadsheets/d/1qM5rLtF_vLmBsjewqYPvAOL-grvVtQwU3dx77SVvwJY/export?format=csv"
 
 try:
     # ดึงรายชื่อจากคอลัมน์แรกใน Sheets
